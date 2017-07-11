@@ -3,6 +3,12 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 import os
 
+INICIO = 'inicio'
+INSUMO = 'insumo'
+IMOVEL = 'imovel'
+COMPRA_INSUMO = 'compra_insumo'
+RELATORIOS = 'relatorios'
+
 class interface:
     def __init__(self):
         self.builder = Gtk.Builder()
@@ -12,14 +18,19 @@ class interface:
         #janela principal
         self.window = self.builder.get_object("window2")
         self.window.show_all()
+        self.janela = INICIO
 
         #Objetos
+        self.janela_inicio = self.builder.get_object("window2")
+        self.janela_operacao = self.builder.get_object("window3")
         #Cadastro insumo
+        self.janela_cadastro_insumo = self.builder.get_object("window1")
         self.entry_codigo_insumo = self.builder.get_object("entry1")
         self.entry_descricao_insumo = self.builder.get_object("entry2")
         self.entry_unity_insumo = self.builder.get_object("entry3")
         self.btn_save_insumo = self.builder.get_object("button1")
         #cadastro imovel
+        self.janela_cadastro_imovel = self.builder.get_object("window4")
         self.entry_endereco_imovel = self.builder.get_object("entry4")
         self.entry_dimen_imovel = self.builder.get_object("entry5")
         self.entry_type_imovel = self.builder.get_object("entry6")
@@ -29,6 +40,7 @@ class interface:
         self.entry_data_imovel = self.builder.get_object("entry10")
         self.btn_save_imovel = self.builder.get_object("button6")
         #cadastro compra insumo
+        self.janela_cadastro_compra = self.builder.get_object("window5")
         self.entry_imovel_buy_insumo = self.builder.get_object("entry11")
         self.entry_insumo_buy_insumo = self.builder.get_object("entry12")
         self.entry_valor_unity_buy_insumo = self.builder.get_object("entry13")
@@ -46,7 +58,13 @@ class interface:
         self.btn_sel_remove = self.builder.get_object("button9")
 
         self.window.connect("delete-event", self.close)
-    
+
+    def open_window(self,window):
+        self.window.hide()
+        self.window = window
+        self.window.show_all()
+        self.window.connect("delete-event", self.close)
+
     def on_button1_clicked(self, button):
         #salvar insumo
         codigo = self.entry_codigo_insumo.get_text()
@@ -60,24 +78,22 @@ class interface:
             self.entry_descricao_insumo.set_text('')
             self.entry_unity_insumo.set_text('')
             #voltar pra tela inicial
-            self.window.hide()
-            self.window = self.builder.get_object("window2")
-            self.window.show_all()
-            self.window.connect("delete-event", self.close)
+            open_window(self,self.janela_inicio)
     
     def on_button2_clicked(self, button):
-        print('btn2')
+        #abrir imóvel
+        self.janela = IMOVEL
+        open_window(self,self.janela_operacao)
 
     def on_button3_clicked(self, button):
         #abrir insumo
-        print('btn3')
-        self.window.hide()
-        self.window = self.builder.get_object("window3")
-        self.window.show_all()
-        self.window.connect("delete-event", self.close)
+        self.janela = INSUMO
+        open_window(self,self.janela_operacao)
 
     def on_button4_clicked(self, button):
-        print('btn4')
+        #abrir compra insumo
+        self.janela = COMPRA_INSUMO
+        open_window(self,self.janela_operacao)
 
     def on_button5_clicked(self, button):
         print('btn5')
@@ -86,10 +102,21 @@ class interface:
         print('btn6')
 
     def on_button7_clicked(self, button):
-        #cadastrar insumo
         print('btn7')
         self.window.hide()
-        self.window = self.builder.get_object("window1")
+        if self.janela == INSUMO:
+            #cadastrar insumo
+            self.window = self.janela_cadastro_insumo
+        elif self.janela == IMOVEL:
+            #cadastrar imovel
+            self.window = self.janela_cadastro_imovel
+        elif self.janela == COMPRA_INSUMO:
+            #cadastrar compra
+            self.window = self.janela_cadastro_compra
+        elif self.janela = RELATORIOS:
+            print("relatorios")
+        else:
+            print("erro inesperado")
         self.window.show_all()
         self.window.connect("delete-event", self.close)
 
