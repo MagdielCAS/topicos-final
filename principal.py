@@ -16,12 +16,53 @@ class database:
             self.database = mdb.connect(user = "root",passwd="root",db="mydb")
         except mdb.Error as err:
             print(err)
-    
+
+    def insert_insumo(self, code,desc,unity):
+        cur = self.database.cursor()
+        try:
+            cur.execute("INSERT INTO insumo VALUES (0,'%s','%s','%s')" % (code, desc, unity))
+            self.database.commit()
+        except:
+            self.database.rollback()
+
+    def insert_imovel(self, end, dim, tipo, qnt_comodos, responsavel, data):
+        cur = self.database.cursor()
+        try:
+            cur.execute("INSERT INTO imoveis VALUES (0,'%s','%s','%s', '%s', '%s', '%s')" % (end, dim, tipo, qnt_comodos, responsavel, data))
+            self.database.commit()
+        except:
+            self.database.rollback()
+
+    def insert_compra(self, insumo, imovel, valoru, valort, data):
+        cur = self.database.cursor()
+        try:
+            cur.execute("INSERT INTO compra_insumo VALUES (%s, %s, '%s', '%s', '%s')" % (insumo, imovel, valoru, valort, data))
+            self.database.commit()
+        except:
+            self.database.rollback()
+
+
     def get_insumos(self):
         cur = self.database.cursor()
         cur.execute("SELECT * FROM insumo")
         rows = cur.fetchall()
         return rows
+
+    def get_insumos_by_desc(self, desc):
+        cur = self.database.cursor()
+        cur.execute("SELECT * FROM insumo WHERE descricao = '%s'"% (desc))
+        rows = cur.fetchall()
+        return rows[0]
+
+    def update_insumo_by_desc(self,olddesc,newdesc,newcode,newunity):
+        cur = self.database.cursor()
+        try:
+            query = "UPDATE insumo SET descricao = '%s', codigo = '%s', unity_medida = '%s' WHERE descricao = '%s'" % (newdesc, newcode, newunity, olddesc)
+            print(query)
+            cur.execute(query)
+            self.database.commit()
+        except:
+            self.database.rollback()
 
 class interface:
     def __init__(self):
@@ -112,11 +153,12 @@ class interface:
         #salvar insumo
         codigo = self.entry_codigo_insumo.get_text()
         descricao = self.entry_descricao_insumo.get_text()
-        insumo = self.entry_unity_insumo.get_text()
-        if codigo != '' and descricao != '' and insumo != '':
+        unity = self.entry_unity_insumo.get_text()
+        if codigo != '' and descricao != '' and unity != '':
             #salvar
-            print(codigo + ' ' + descricao + ' ' + insumo)
+            print(codigo + ' ' + descricao + ' ' + unity)
             #resetar variaveis
+            self.db.insert_insumo(codigo,descricao,unity)
             self.entry_codigo_insumo.set_text('')
             self.entry_descricao_insumo.set_text('')
             self.entry_unity_insumo.set_text('')
@@ -173,14 +215,18 @@ class interface:
         self.window.hide()
         if self.janela == INSUMO:
             #alterar insumo
-            model = Gtk.ListStore(str)
+            model = self.combo_insumo_edit.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_insumo_edit.pack_start(renderer_text, True)
+                self.combo_insumo_edit.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_edit.set_model(None)
+            model.clear()
             insumos = self.db.get_insumos()
             for insumo in insumos:
-                model.append([insumo[1]])    
+                model.append([insumo[2]])    
             self.combo_insumo_edit.set_model(model)
-            renderer_text = Gtk.CellRendererText()
-            self.combo_insumo_edit.pack_start(renderer_text, True)
-            self.combo_insumo_edit.add_attribute(renderer_text, "text", 0)
             self.window = self.janela_alterar_insumo
         elif self.janela == IMOVEL:
             #alterar imovel
@@ -201,16 +247,18 @@ class interface:
         self.window.hide()
         if self.janela == INSUMO:
             #remover insumo
-            list_store = Gtk.ListStore(gobject.TYPE_STRING)
+            model = self.combo_insumo_edit.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_insumo_edit.pack_start(renderer_text, True)
+                self.combo_insumo_edit.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_edit.set_model(None)
+            model.clear()
             insumos = self.db.get_insumos()
             for insumo in insumos:
-                list_store.append(insumo[1])
-            self.combo_insumo_remove.set_model(list_store)
-            self.combo_insumo_remove.set_active(0)
-            # And here's the new stuff:
-            cell = Gtk.CellRendererText()
-            self.combo_insumo_remove.pack_start(cell, True)
-            self.combo_insumo_remove.add_attribute(cell, "text", 0)
+                model.append([insumo[2]])    
+            self.combo_insumo_edit.set_model(model)
             self.window = self.janela_remover_insumo
         elif self.janela == IMOVEL:
             #remover imovel
@@ -234,6 +282,11 @@ class interface:
     def on_button11_clicked(self, button):
         #salvar alterar insumo
         #voltar pra tela inicial
+        self.db.update_insumo_by_desc(self.selected_insumo,self.entry_descricao_insumo_edit.get_text(),self.entry_codigo_insumo_edit.get_text(),self.entry_unity_insumo_edit.get_text())
+        self.selected_insumo = ''
+        self.entry_descricao_insumo_edit.set_text('')
+        self.entry_codigo_insumo_edit.set_text('')
+        self.entry_unity_insumo_edit.set_text('')
         self.open_window(self.janela_inicio)
     
     def on_button12_clicked(self, button):
@@ -260,6 +313,19 @@ class interface:
         #remover compra
         #voltar pra tela inicial
         self.open_window(self.janela_inicio)
+
+    def on_combobox1_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            print(" desc=%s" %  desc)
+            atributes = self.db.get_insumos_by_desc(desc)
+            print(atributes)
+            self.entry_codigo_insumo_edit.set_text(atributes[1])
+            self.entry_descricao_insumo_edit.set_text(atributes[2])
+            self.entry_unity_insumo_edit.set_text(atributes[3])
+            self.selected_insumo = desc
 
     def close(self, *args):
         Gtk.main_quit(*args)
