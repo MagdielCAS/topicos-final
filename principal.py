@@ -1,7 +1,8 @@
 import gi
 gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
-import os
+import MySQLdb as mdb
+import sys
 
 INICIO = 'inicio'
 INSUMO = 'insumo'
@@ -9,8 +10,22 @@ IMOVEL = 'imovel'
 COMPRA_INSUMO = 'compra_insumo'
 RELATORIOS = 'relatorios'
 
+class database:
+    def __init__(self):
+        try:
+            self.database = mdb.connect(user = "root",passwd="root",db="mydb")
+        except mdb.Error as err:
+            print(err)
+    
+    def get_insumos(self):
+        cur = self.database.cursor()
+        cur.execute("SELECT * FROM insumo")
+        rows = cur.fetchall()
+        return rows
+
 class interface:
     def __init__(self):
+        self.db = database()
         self.builder = Gtk.Builder()
         self.builder.add_from_file("interface.glade")
         self.builder.connect_signals(self)
