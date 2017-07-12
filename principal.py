@@ -36,19 +36,34 @@ class interface:
         self.janela = INICIO
 
         #Objetos
+        ##janelas
         self.janela_inicio = self.builder.get_object("window2")
         self.janela_operacao = self.builder.get_object("window3")
         #insumo
+        ##janelas
         self.janela_cadastro_insumo = self.builder.get_object("window1")
         self.janela_alterar_insumo = self.builder.get_object("window6")
         self.janela_remover_insumo = self.builder.get_object("window7")
+        ##entradas cadastro
         self.entry_codigo_insumo = self.builder.get_object("entry1")
         self.entry_descricao_insumo = self.builder.get_object("entry2")
         self.entry_unity_insumo = self.builder.get_object("entry3")
+        ##entradas edit
+        self.entry_insumo_edit = self.builder.get_object("combobox1")
+        self.entry_codigo_insumo_edit = self.builder.get_object("entry16")
+        self.entry_descricao_insumo_edit = self.builder.get_object("entry17")
+        self.entry_unity_insumo_edit = self.builder.get_object("entry18")
+        ##labes remove
+        self.entry_insumo_remove = self.builder.get_object("combobox2")
+        self.label_codigo_insumo_remove = self.builder.get_object("label31")
+        self.label_descricao_insumo_remove = self.builder.get_object("label32")
+        self.label_unity_insumo_remove = self.builder.get_object("label33")
+        ##buttons
         self.btn_save_cadastro_insumo = self.builder.get_object("button1")
         self.btn_save_alterar_insumo = self.builder.get_object("button11")
         self.btn_save_remover_insumo = self.builder.get_object("button12")
         #imovel
+        ##janelas
         self.janela_cadastro_imovel = self.builder.get_object("window4")
         self.janela_alterar_imovel = self.builder.get_object("window8")
         self.janela_remover_imovel = self.builder.get_object("window9")
@@ -63,6 +78,7 @@ class interface:
         self.btn_save_alterar_imovel = self.builder.get_object("button13")
         self.btn_save_remover_imovel = self.builder.get_object("button14")
         #compra insumo
+        ##janelas
         self.janela_cadastro_compra = self.builder.get_object("window5")
         self.janela_alterar_compra = self.builder.get_object("window10")
         self.janela_remover_compra = self.builder.get_object("window11")
@@ -108,7 +124,7 @@ class interface:
             self.open_window(self.janela_inicio)
     
     def on_button2_clicked(self, button):
-        #abrir imóvel
+        #abrir imovel
         self.janela = IMOVEL
         self.open_window(self.janela_operacao)
 
@@ -157,6 +173,13 @@ class interface:
         self.window.hide()
         if self.janela == INSUMO:
             #alterar insumo
+            #combo = gtk.combo_box_new_text()
+            # insumos = self.db.get_insumos()
+            # combo.append_text('hello')
+            # combo.append_text('world')
+            # combo.set_active(0)
+            # box = builder.get_object('some-box')
+            # box.pack_start(combo, False, False)
             self.window = self.janela_alterar_insumo
         elif self.janela == IMOVEL:
             #alterar imovel
@@ -200,7 +223,6 @@ class interface:
     def on_button11_clicked(self, button):
         #salvar alterar insumo
         #voltar pra tela inicial
-        print("aqui")
         self.open_window(self.janela_inicio)
     
     def on_button12_clicked(self, button):
