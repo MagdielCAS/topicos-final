@@ -437,7 +437,6 @@
                       <object class="GtkLabel" id="label73">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Imóvel</property>
                         <property name="ellipsize">end</property>
                         <property name="width_chars">78</property>
                       </object>
@@ -450,7 +449,6 @@
                       <object class="GtkLabel" id="label74">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Insumo</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -461,7 +459,6 @@
                       <object class="GtkLabel" id="label75">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Valor untário</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -472,7 +469,6 @@
                       <object class="GtkLabel" id="label76">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Valor total</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -483,7 +479,6 @@
                       <object class="GtkLabel" id="label77">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Data da compra</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1328,7 +1323,6 @@
                       <object class="GtkLabel" id="label31">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">codigo do insumo</property>
                         <property name="justify">right</property>
                         <property name="width_chars">78</property>
                       </object>
@@ -1341,7 +1335,6 @@
                       <object class="GtkLabel" id="label32">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">descricao do insumo</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1352,7 +1345,6 @@
                       <object class="GtkLabel" id="label33">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">unidade de medida do insumo</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1580,6 +1572,7 @@
                       <object class="GtkComboBox" id="combobox3">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <signal name="changed" handler="on_combobox3_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1767,7 +1760,6 @@
                       <object class="GtkLabel" id="label52">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Endereço</property>
                         <property name="width_chars">78</property>
                       </object>
                       <packing>
@@ -1779,7 +1771,6 @@
                       <object class="GtkLabel" id="label53">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Dimensões</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1790,7 +1781,6 @@
                       <object class="GtkLabel" id="label54">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Tipo</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1801,7 +1791,6 @@
                       <object class="GtkLabel" id="label55">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Quantidade de Comodos</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1812,7 +1801,6 @@
                       <object class="GtkLabel" id="label56">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Responsável</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1823,7 +1811,6 @@
                       <object class="GtkLabel" id="label57">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Status</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1834,7 +1821,6 @@
                       <object class="GtkLabel" id="label58">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Data</property>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>

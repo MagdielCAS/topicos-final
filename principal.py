@@ -49,12 +49,12 @@ class interface:
         self.entry_descricao_insumo = self.builder.get_object("entry2")
         self.entry_unity_insumo = self.builder.get_object("entry3")
         ##entradas edit
-        self.entry_insumo_edit = self.builder.get_object("combobox1")
+        self.combo_insumo_edit = self.builder.get_object("combobox1")
         self.entry_codigo_insumo_edit = self.builder.get_object("entry16")
         self.entry_descricao_insumo_edit = self.builder.get_object("entry17")
         self.entry_unity_insumo_edit = self.builder.get_object("entry18")
-        ##labes remove
-        self.entry_insumo_remove = self.builder.get_object("combobox2")
+        ##labels remove
+        self.combo_insumo_remove = self.builder.get_object("combobox2")
         self.label_codigo_insumo_remove = self.builder.get_object("label31")
         self.label_descricao_insumo_remove = self.builder.get_object("label32")
         self.label_unity_insumo_remove = self.builder.get_object("label33")
@@ -173,13 +173,14 @@ class interface:
         self.window.hide()
         if self.janela == INSUMO:
             #alterar insumo
-            #combo = gtk.combo_box_new_text()
-            # insumos = self.db.get_insumos()
-            # combo.append_text('hello')
-            # combo.append_text('world')
-            # combo.set_active(0)
-            # box = builder.get_object('some-box')
-            # box.pack_start(combo, False, False)
+            model = Gtk.ListStore(str)
+            insumos = self.db.get_insumos()
+            for insumo in insumos:
+                model.append([insumo[1]])    
+            self.combo_insumo_edit.set_model(model)
+            renderer_text = Gtk.CellRendererText()
+            self.combo_insumo_edit.pack_start(renderer_text, True)
+            self.combo_insumo_edit.add_attribute(renderer_text, "text", 0)
             self.window = self.janela_alterar_insumo
         elif self.janela == IMOVEL:
             #alterar imovel
@@ -200,6 +201,16 @@ class interface:
         self.window.hide()
         if self.janela == INSUMO:
             #remover insumo
+            list_store = Gtk.ListStore(gobject.TYPE_STRING)
+            insumos = self.db.get_insumos()
+            for insumo in insumos:
+                list_store.append(insumo[1])
+            self.combo_insumo_remove.set_model(list_store)
+            self.combo_insumo_remove.set_active(0)
+            # And here's the new stuff:
+            cell = Gtk.CellRendererText()
+            self.combo_insumo_remove.pack_start(cell, True)
+            self.combo_insumo_remove.add_attribute(cell, "text", 0)
             self.window = self.janela_remover_insumo
         elif self.janela == IMOVEL:
             #remover imovel
