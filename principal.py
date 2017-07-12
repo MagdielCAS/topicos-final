@@ -57,12 +57,19 @@ class database:
     def update_insumo_by_desc(self,olddesc,newdesc,newcode,newunity):
         cur = self.database.cursor()
         try:
-            query = "UPDATE insumo SET descricao = '%s', codigo = '%s', unity_medida = '%s' WHERE descricao = '%s'" % (newdesc, newcode, newunity, olddesc)
-            print(query)
-            cur.execute(query)
+            cur.execute("UPDATE insumo SET descricao = '%s', codigo = '%s', unity_medida = '%s' WHERE descricao = '%s'" % (newdesc, newcode, newunity, olddesc))
             self.database.commit()
         except:
             self.database.rollback()
+
+    def remove_insumo(self,desc, codigo, unity):
+        cur = self.database.cursor()
+        try:
+            cur.execute("DELETE FROM insumo WHERE descricao = '%s' AND codigo = '%s' AND unity_medida = '%s'" % (desc, codigo, unity))
+            self.database.commit()
+        except:
+            self.database.rollback()
+
 
 class interface:
     def __init__(self):
@@ -247,18 +254,18 @@ class interface:
         self.window.hide()
         if self.janela == INSUMO:
             #remover insumo
-            model = self.combo_insumo_edit.get_model()
+            model = self.combo_insumo_remove.get_model()
             if model is None:
                 model = Gtk.ListStore(str)
                 renderer_text = Gtk.CellRendererText()
-                self.combo_insumo_edit.pack_start(renderer_text, True)
-                self.combo_insumo_edit.add_attribute(renderer_text, "text", 0)
-            self.combo_insumo_edit.set_model(None)
+                self.combo_insumo_remove.pack_start(renderer_text, True)
+                self.combo_insumo_remove.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_remove.set_model(None)
             model.clear()
             insumos = self.db.get_insumos()
             for insumo in insumos:
                 model.append([insumo[2]])    
-            self.combo_insumo_edit.set_model(model)
+            self.combo_insumo_remove.set_model(model)
             self.window = self.janela_remover_insumo
         elif self.janela == IMOVEL:
             #remover imovel
@@ -292,6 +299,11 @@ class interface:
     def on_button12_clicked(self, button):
         #remover insumo
         #voltar pra tela inicial
+        self.db.remove_insumo(self.label_descricao_insumo_remove.get_text(),self.label_codigo_insumo_remove.get_text(),self.label_unity_insumo_remove.get_text())
+        self.selected_insumo = ''
+        self.label_descricao_insumo_remove.set_text('')
+        self.label_codigo_insumo_remove.set_text('')
+        self.label_unity_insumo_remove.set_text('')
         self.open_window(self.janela_inicio)
 
     def on_button13_clicked(self, button):
@@ -325,6 +337,19 @@ class interface:
             self.entry_codigo_insumo_edit.set_text(atributes[1])
             self.entry_descricao_insumo_edit.set_text(atributes[2])
             self.entry_unity_insumo_edit.set_text(atributes[3])
+            self.selected_insumo = desc
+    
+    def on_combobox2_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            print(" desc=%s" %  desc)
+            atributes = self.db.get_insumos_by_desc(desc)
+            print(atributes)
+            self.label_codigo_insumo_remove.set_text(atributes[1])
+            self.label_descricao_insumo_remove.set_text(atributes[2])
+            self.label_unity_insumo_remove.set_text(atributes[3])
             self.selected_insumo = desc
 
     def close(self, *args):
