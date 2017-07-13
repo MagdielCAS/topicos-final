@@ -77,6 +77,12 @@ class database:
         rows = cur.fetchall()
         return rows[0]
 
+    def get_insumo_by_imovel(self,imovel):
+        cur = self.database.cursor()
+        cur.execute("SELECT * FROM vw_insumo_by_imoveis WHERE imovel = %s"% (imovel))
+        rows = cur.fetchall()
+        return rows
+
     def update_insumo_by_desc(self,olddesc,newdesc,newcode,newunity):
         cur = self.database.cursor()
         try:
@@ -93,10 +99,10 @@ class database:
         except:
             self.database.rollback()
 
-    def update_compra(self, insumoold, imovelold, insumo, imovel, valoru, valort, data):
+    def update_compra(self, insumo, imovel, valoru, valort, data):
         cur = self.database.cursor()
         try:
-            cur.execute("UPDATE compra_insumo SET insumo = %s, imoveis = %s, valor_unitario = '%s', valor_total = '%s', data_compra = '%s' WHERE insumo = %s AND imoveis = %s" % (insumo, imovel, valoru, valort, data, insumoold, imovelold))
+            cur.execute("UPDATE compra_insumo SET valor_unitario = '%s', valor_total = '%s', data_compra = '%s' WHERE insumo = %s AND imoveis = %s" % (valoru, valort, data, insumo, imovel))
             self.database.commit()
         except:
             self.database.rollback()
@@ -160,10 +166,6 @@ class interface:
         self.label_codigo_insumo_remove = self.builder.get_object("label31")
         self.label_descricao_insumo_remove = self.builder.get_object("label32")
         self.label_unity_insumo_remove = self.builder.get_object("label33")
-        ##buttons
-        self.btn_save_cadastro_insumo = self.builder.get_object("button1")
-        self.btn_save_alterar_insumo = self.builder.get_object("button11")
-        self.btn_save_remover_insumo = self.builder.get_object("button12")
         #imovel
         ##janelas
         self.janela_cadastro_imovel = self.builder.get_object("window4")
@@ -195,36 +197,30 @@ class interface:
         self.label_responsavel_imovel_remove = self.builder.get_object("label56")
         self.label_status_imovel_remove = self.builder.get_object("label57")
         self.label_data_imovel_remove = self.builder.get_object("label58")
-        ##buttons
-        self.btn_save_cadastro_imovel = self.builder.get_object("button6")
-        self.btn_save_alterar_imovel = self.builder.get_object("button13")
-        self.btn_save_remover_imovel = self.builder.get_object("button14")
         #compra insumo
         ##janelas
         self.janela_cadastro_compra = self.builder.get_object("window5")
         self.janela_alterar_compra = self.builder.get_object("window10")
         self.janela_remover_compra = self.builder.get_object("window11")
         ##entradas cadastro
-        self.entry_imovel_buy_insumo = self.builder.get_object("entry11")
-        self.entry_insumo_buy_insumo = self.builder.get_object("entry12")
+        self.combo_imovel_buy_insumo = self.builder.get_object("combobox7")
+        self.combo_insumo_buy_insumo = self.builder.get_object("combobox8")
         self.entry_valor_unity_buy_insumo = self.builder.get_object("entry13")
         self.entry_valor_total_buy_insumo = self.builder.get_object("entry14")
         self.entry_date_buy_insumo = self.builder.get_object("entry15")
         ##entradas edit
-        ##buttons
-        self.btn_save_cadastro_buy_insumo = self.builder.get_object("button10")
-        self.btn_save_alterar_buy_insumo = self.builder.get_object("button15")
-        self.btn_save_remover_buy_insumo = self.builder.get_object("button16")
-        #operacoes
-        self.btn_sel_imovel = self.builder.get_object("button2")
-        self.btn_sel_insumo = self.builder.get_object("button3")
-        self.btn_sel_buys = self.builder.get_object("button4")
-        self.btn_sel_relatorios = self.builder.get_object("button5")
-        #selecionar crud
-        self.btn_sel_cadastro = self.builder.get_object("button7")
-        self.btn_sel_alterar = self.builder.get_object("button8")
-        self.btn_sel_remove = self.builder.get_object("button9")
-
+        self.combo_imovel_buy_insumo_edit = self.builder.get_object("combobox9")
+        self.combo_insumo_buy_insumo_edit = self.builder.get_object("combobox10")
+        self.entry_valor_unity_buy_insumo_edit = self.builder.get_object("entry28")
+        self.entry_valor_total_buy_insumo_edit = self.builder.get_object("entry29")
+        self.entry_date_buy_insumo_edit = self.builder.get_object("entry30")
+        ##labes remove
+        ##entradas edit
+        self.combo_imovel_buy_insumo_remove = self.builder.get_object("combobox6")
+        self.combo_insumo_buy_insumo_remove = self.builder.get_object("combobox11")
+        self.label_valor_unity_buy_insumo_remove = self.builder.get_object("label75")
+        self.label_valor_total_buy_insumo_remove = self.builder.get_object("label76")
+        self.label_date_buy_insumo_remove = self.builder.get_object("label77")
         self.window.connect("delete-event", self.close)
 
     def open_window(self,window):
@@ -303,6 +299,30 @@ class interface:
             self.window = self.janela_cadastro_imovel
         elif self.janela == COMPRA_INSUMO:
             #cadastrar compra
+            model = self.combo_imovel_buy_insumo.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_imovel_buy_insumo.pack_start(renderer_text, True)
+                self.combo_imovel_buy_insumo.add_attribute(renderer_text, "text", 0)
+            self.combo_imovel_buy_insumo.set_model(None)
+            model.clear()
+            imoveis = self.db.get_imoveis()
+            for imovel in imoveis:
+                model.append([imovel[1]])    
+            self.combo_imovel_buy_insumo.set_model(model)
+            model = self.combo_insumo_buy_insumo.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_insumo_buy_insumo.pack_start(renderer_text, True)
+                self.combo_insumo_buy_insumo.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_buy_insumo.set_model(None)
+            model.clear()
+            insumos = self.db.get_insumos()
+            for insumo in insumos:
+                model.append([insumo[2]])    
+            self.combo_insumo_buy_insumo.set_model(model)
             self.window = self.janela_cadastro_compra
         elif self.janela == RELATORIOS:
             print("relatorios")
@@ -347,6 +367,18 @@ class interface:
             self.window = self.janela_alterar_imovel
         elif self.janela == COMPRA_INSUMO:
             #alterar compra
+            model = self.combo_imovel_buy_insumo_edit.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_imovel_buy_insumo_edit.pack_start(renderer_text, True)
+                self.combo_imovel_buy_insumo_edit.add_attribute(renderer_text, "text", 0)
+            self.combo_imovel_buy_insumo_edit.set_model(None)
+            model.clear()
+            imoveis = self.db.get_imoveis()
+            for imovel in imoveis:
+                model.append([imovel[1]])    
+            self.combo_imovel_buy_insumo_edit.set_model(model)
             self.window = self.janela_alterar_compra
         elif self.janela == RELATORIOS:
             print("relatorios")
@@ -391,6 +423,18 @@ class interface:
             self.window = self.janela_remover_imovel
         elif self.janela == COMPRA_INSUMO:
             #remover compra
+            model = self.combo_imovel_buy_insumo_remove.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_imovel_buy_insumo_remove.pack_start(renderer_text, True)
+                self.combo_imovel_buy_insumo_remove.add_attribute(renderer_text, "text", 0)
+            self.combo_imovel_buy_insumo_remove.set_model(None)
+            model.clear()
+            imoveis = self.db.get_imoveis()
+            for imovel in imoveis:
+                model.append([imovel[1]])    
+            self.combo_imovel_buy_insumo_remove.set_model(model)
             self.window = self.janela_remover_compra
         elif self.janela == RELATORIOS:
             print("relatorios")
@@ -403,6 +447,12 @@ class interface:
     def on_button10_clicked(self, button):
         #salvar cadastro compra
         #voltar pra tela inicial
+        self.db.insert_compra(self.selected_insumo_buy, self.selected_imovel_buy, self.entry_valor_unity_buy_insumo.get_text(), self.entry_valor_total_buy_insumo.get_text(), self.entry_date_buy_insumo.get_text())
+        self.selected_insumo_buy = 0
+        self.selected_imovel_buy = 0
+        self.entry_valor_unity_buy_insumo.set_text('')
+        self.entry_valor_total_buy_insumo.set_text('')
+        self.entry_date_buy_insumo.set_text('')
         self.open_window(self.janela_inicio)
     
     def on_button11_clicked(self, button):
@@ -452,11 +502,23 @@ class interface:
     def on_button15_clicked(self, button):
         #salvar editar compra
         #voltar pra tela inicial
+        self.db.update_compra(self.selected_insumo_buy, self.selected_imovel_buy, self.entry_valor_unity_buy_insumo_edit.get_text(), self.entry_valor_total_buy_insumo_edit.get_text(), self.entry_date_buy_insumo_edit.get_text())
+        self.selected_insumo_buy = 0
+        self.selected_imovel_buy = 0
+        self.entry_valor_unity_buy_insumo_edit.set_text('')
+        self.entry_valor_total_buy_insumo_edit.set_text('')
+        self.entry_date_buy_insumo_edit.set_text('')
         self.open_window(self.janela_inicio)
 
     def on_button16_clicked(self, button):
         #remover compra
         #voltar pra tela inicial
+        self.db.remove_compra(self.selected_insumo_buy, self.selected_imovel_buy)
+        self.selected_insumo_buy = 0
+        self.selected_imovel_buy = 0
+        self.label_valor_unity_buy_insumo_remove.set_text('')
+        self.label_valor_total_buy_insumo_remove.set_text('')
+        self.label_date_buy_insumo_remove.set_text('')
         self.open_window(self.janela_inicio)
 
     def on_combobox1_changed(self, combo):
@@ -522,6 +584,87 @@ class interface:
             self.label_data_imovel_remove.set_text(atributes[6])
             self.label_status_imovel_remove.set_text(atributes[7])
             self.selected_imovel = desc
+
+    def on_combobox6_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_imovel_by_end(desc)
+            self.selected_imovel_buy = atributes[0]
+        model = self.combo_insumo_buy_insumo_remove.get_model()
+        if model is None:
+            model = Gtk.ListStore(str)
+            renderer_text = Gtk.CellRendererText()
+            self.combo_insumo_buy_insumo_remove.pack_start(renderer_text, True)
+            self.combo_insumo_buy_insumo_remove.add_attribute(renderer_text, "text", 0)
+        self.combo_insumo_buy_insumo_remove.set_model(None)
+        model.clear()
+        insumos = self.db.get_insumo_by_imovel(self.selected_imovel_buy)
+        for insumo in insumos:
+            model.append([insumo[1]])    
+        self.combo_insumo_buy_insumo_remove.set_model(model)
+    
+    def on_combobox7_changed(self, combo):
+        #combo selecionar imovel compra
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            print(" desc=%s" %  desc)
+            atributes = self.db.get_imovel_by_end(desc)
+            self.selected_imovel_buy = atributes[0]
+
+    def on_combobox8_changed(self, combo):
+        #combo selecionar insumo compra
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            print(" desc=%s" %  desc)
+            atributes = self.db.get_insumo_by_desc(desc)
+            self.selected_insumo_buy = atributes[0]
+
+    def on_combobox9_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_imovel_by_end(desc)
+            self.selected_imovel_buy = atributes[0]
+        model = self.combo_insumo_buy_insumo_edit.get_model()
+        if model is None:
+            model = Gtk.ListStore(str)
+            renderer_text = Gtk.CellRendererText()
+            self.combo_insumo_buy_insumo_edit.pack_start(renderer_text, True)
+            self.combo_insumo_buy_insumo_edit.add_attribute(renderer_text, "text", 0)
+        self.combo_insumo_buy_insumo_edit.set_model(None)
+        model.clear()
+        insumos = self.db.get_insumo_by_imovel(self.selected_imovel_buy)
+        for insumo in insumos:
+            print(insumo)
+            model.append([insumo[1]])    
+        self.combo_insumo_buy_insumo_edit.set_model(model)
+    
+    def on_combobox10_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_insumo_by_desc(desc)
+            self.selected_insumo_buy = atributes[0]
+
+    def on_combobox11_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_insumo_by_desc(desc)
+            self.selected_insumo_buy = atributes[0]
+            data = self.db.get_compra(self.selected_insumo_buy,self.selected_imovel_buy)
+            self.label_valor_unity_buy_insumo_remove.set_text(data[2])
+            self.label_valor_total_buy_insumo_remove.set_text(data[3])
+            self.label_date_buy_insumo_remove.set_text(data[4])
 
     def close(self, *args):
         Gtk.main_quit(*args)
