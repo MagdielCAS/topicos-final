@@ -332,18 +332,18 @@ class interface:
             self.window = self.janela_alterar_insumo
         elif self.janela == IMOVEL:
             #alterar imovel
-            model = self.combo_insumo_edit.get_model()
+            model = self.combo_imovel_edit.get_model()
             if model is None:
                 model = Gtk.ListStore(str)
                 renderer_text = Gtk.CellRendererText()
-                self.combo_insumo_edit.pack_start(renderer_text, True)
-                self.combo_insumo_edit.add_attribute(renderer_text, "text", 0)
-            self.combo_insumo_edit.set_model(None)
+                self.combo_imovel_edit.pack_start(renderer_text, True)
+                self.combo_imovel_edit.add_attribute(renderer_text, "text", 0)
+            self.combo_imovel_edit.set_model(None)
             model.clear()
-            insumos = self.db.get_insumos()
-            for insumo in insumos:
-                model.append([insumo[2]])    
-            self.combo_insumo_edit.set_model(model)
+            imoveis = self.db.get_imoveis()
+            for imovel in imoveis:
+                model.append([imovel[1]])    
+            self.combo_imovel_edit.set_model(model)
             self.window = self.janela_alterar_imovel
         elif self.janela == COMPRA_INSUMO:
             #alterar compra
@@ -407,7 +407,6 @@ class interface:
     
     def on_button11_clicked(self, button):
         #salvar alterar insumo
-        #voltar pra tela inicial
         self.db.update_insumo_by_desc(self.selected_insumo,self.entry_descricao_insumo_edit.get_text(),self.entry_codigo_insumo_edit.get_text(),self.entry_unity_insumo_edit.get_text())
         self.selected_insumo = ''
         self.entry_descricao_insumo_edit.set_text('')
@@ -417,7 +416,6 @@ class interface:
     
     def on_button12_clicked(self, button):
         #remover insumo
-        #voltar pra tela inicial
         self.db.remove_insumo(self.label_descricao_insumo_remove.get_text(),self.label_codigo_insumo_remove.get_text(),self.label_unity_insumo_remove.get_text())
         self.selected_insumo = ''
         self.label_descricao_insumo_remove.set_text('')
@@ -427,12 +425,19 @@ class interface:
 
     def on_button13_clicked(self, button):
         #salvar editar imovel
-        #voltar pra tela inicial
+        self.db.update_imovel_by_end(self.selected_imovel,self.entry_endereco_imovel_edit.get_text(), self.entry_dimen_imovel_edit.get_text(), self.entry_type_imovel_edit.get_text(), self.entry_comodos_imovel_edit.get_text(), self.entry_responsavel_imovel_edit.get_text(), self.entry_status_imovel_edit.get_text(),self.entry_data_imovel_edit.get_text())
+        self.selected_imovel = ''
+        self.entry_endereco_imovel_edit.set_text('')
+        self.entry_dimen_imovel_edit.set_text('')
+        self.entry_type_imovel_edit.set_text('')
+        self.entry_comodos_imovel_edit.set_text('')
+        self.entry_responsavel_imovel_edit.set_text('')
+        self.entry_status_imovel_edit.set_text('')
+        self.entry_data_imovel_edit.set_text('')
         self.open_window(self.janela_inicio)
 
     def on_button14_clicked(self, button):
         #remover imovel
-        #voltar pra tela inicial
         self.db.remove_imovel(self.label_endereco_imovel_remove.get_text(), self.label_dimen_imovel_remove.get_text(), self.label_type_imovel_remove.get_text(), self.label_comodos_imovel_remove.get_text(), self.label_responsavel_imovel_remove.get_text(), self.label_data_imovel_remove.get_text())
         self.selected_imovel = ''
         self.label_endereco_imovel_remove.set_text('')
@@ -481,7 +486,25 @@ class interface:
             self.label_descricao_insumo_remove.set_text(atributes[2])
             self.label_unity_insumo_remove.set_text(atributes[3])
             self.selected_insumo = desc
-    
+
+    def on_combobox3_changed(self, combo):
+        #combo remover imovel
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            print(" desc=%s" %  desc)
+            atributes = self.db.get_imovel_by_end(desc)
+            print(atributes)
+            self.entry_endereco_imovel_edit.set_text(atributes[1])
+            self.entry_dimen_imovel_edit.set_text(atributes[2])
+            self.entry_type_imovel_edit.set_text(atributes[3])
+            self.entry_comodos_imovel_edit.set_text(atributes[4])
+            self.entry_responsavel_imovel_edit.set_text(atributes[5])
+            self.entry_data_imovel_edit.set_text(atributes[6])
+            self.entry_status_imovel_edit.set_text(atributes[7])
+            self.selected_imovel = desc
+
     def on_combobox4_changed(self, combo):
         #combo remover imovel
         tree_iter = combo.get_active_iter()
@@ -498,7 +521,7 @@ class interface:
             self.label_responsavel_imovel_remove.set_text(atributes[5])
             self.label_data_imovel_remove.set_text(atributes[6])
             self.label_status_imovel_remove.set_text(atributes[7])
-            self.selected_insumo = desc
+            self.selected_imovel = desc
 
     def close(self, *args):
         Gtk.main_quit(*args)
