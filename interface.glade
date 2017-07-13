@@ -1024,6 +1024,7 @@
                       <object class="GtkComboBox" id="combobox7">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <signal name="changed" handler="on_combobox7_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1034,6 +1035,7 @@
                       <object class="GtkComboBox" id="combobox8">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <signal name="changed" handler="on_combobox8_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1742,6 +1744,7 @@
                       <object class="GtkComboBox" id="combobox4">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <signal name="changed" handler="on_combobox4_changed" swapped="no"/>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
