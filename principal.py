@@ -147,6 +147,10 @@ class interface:
         ##janelas
         self.janela_inicio = self.builder.get_object("window2")
         self.janela_operacao = self.builder.get_object("window3")
+        self.janela_relatorio = self.builder.get_object("window14")
+        self.janela_relatorio_imovel = self.builder.get_object("window12")
+        self.janela_relatorio_compra = self.builder.get_object("window13")
+        self.janela_relatorio_insumo = self.builder.get_object("window15")
         #insumo
         ##janelas
         self.janela_cadastro_insumo = self.builder.get_object("window1")
@@ -214,13 +218,33 @@ class interface:
         self.entry_valor_unity_buy_insumo_edit = self.builder.get_object("entry28")
         self.entry_valor_total_buy_insumo_edit = self.builder.get_object("entry29")
         self.entry_date_buy_insumo_edit = self.builder.get_object("entry30")
-        ##labes remove
-        ##entradas edit
+        ##labels remove
         self.combo_imovel_buy_insumo_remove = self.builder.get_object("combobox6")
         self.combo_insumo_buy_insumo_remove = self.builder.get_object("combobox11")
         self.label_valor_unity_buy_insumo_remove = self.builder.get_object("label75")
         self.label_valor_total_buy_insumo_remove = self.builder.get_object("label76")
         self.label_date_buy_insumo_remove = self.builder.get_object("label77")
+        #consulta imovel
+        self.combo_imovel = self.builder.get_object("combobox5")
+        self.label_endereco_imovel = self.builder.get_object("label82")
+        self.label_dimen_imovel = self.builder.get_object("label83")
+        self.label_type_imovel = self.builder.get_object("label84")
+        self.label_comodos_imovel = self.builder.get_object("label85")
+        self.label_responsavel_imovel = self.builder.get_object("label86")
+        self.label_status_imovel = self.builder.get_object("label87")
+        self.label_data_imovel = self.builder.get_object("label88")
+        #consulta compra
+        self.combo_imovel_buy_insumo_consult = self.builder.get_object("combobox12")
+        self.combo_insumo_buy_insumo_consult = self.builder.get_object("combobox13")
+        self.label_valor_unity_buy_insumo_consult = self.builder.get_object("label95")
+        self.label_valor_total_buy_insumo_consult = self.builder.get_object("label96")
+        self.label_date_buy_insumo_consult = self.builder.get_object("label97")
+        #consulta insumo
+        self.combo_insumo_consult = self.builder.get_object("combobox14")
+        self.label_codigo_insumo_consult = self.builder.get_object("label104")
+        self.label_descricao_insumo_consult = self.builder.get_object("label105")
+        self.label_unity_insumo_consult = self.builder.get_object("label106")
+
         self.window.connect("delete-event", self.close)
 
     def open_window(self,window):
@@ -262,7 +286,7 @@ class interface:
     def on_button5_clicked(self, button):
         #abrir relatorios
         self.janela = RELATORIOS
-        self.open_window(self.janela_operacao)
+        self.open_window(self.janela_relatorio)
 
     def on_button6_clicked(self, button):
         #salvar cadastro imovel
@@ -324,9 +348,6 @@ class interface:
                 model.append([insumo[2]])    
             self.combo_insumo_buy_insumo.set_model(model)
             self.window = self.janela_cadastro_compra
-        elif self.janela == RELATORIOS:
-            print("relatorios")
-            self.window = self.janela_inicio
         else:
             print("erro inesperado")
         self.window.show_all()
@@ -380,9 +401,6 @@ class interface:
                 model.append([imovel[1]])    
             self.combo_imovel_buy_insumo_edit.set_model(model)
             self.window = self.janela_alterar_compra
-        elif self.janela == RELATORIOS:
-            print("relatorios")
-            self.window = self.janela_inicio
         else:
             print("erro inesperado")
         self.window.show_all()
@@ -436,9 +454,6 @@ class interface:
                 model.append([imovel[1]])    
             self.combo_imovel_buy_insumo_remove.set_model(model)
             self.window = self.janela_remover_compra
-        elif self.janela == RELATORIOS:
-            print("relatorios")
-            self.window = self.janela_inicio
         else:
             print("erro inesperado")
         self.window.show_all()
@@ -521,15 +536,90 @@ class interface:
         self.label_date_buy_insumo_remove.set_text('')
         self.open_window(self.janela_inicio)
 
+    def on_button17_clicked(self, button):
+        #voltar consulta imoveis
+        self.label_endereco_imovel.set_text('')
+        self.label_dimen_imovel.set_text('')
+        self.label_type_imovel.set_text('')
+        self.label_comodos_imovel.set_text('')
+        self.label_responsavel_imovel.set_text('')
+        self.label_data_imovel.set_text('')
+        self.label_status_imovel.set_text('')
+        self.open_window(self.janela_inicio)
+
+    def on_button18_clicked(self, button):
+        #voltar consulta compra
+        self.label_valor_unity_buy_insumo_consult.set_text('')
+        self.label_valor_total_buy_insumo_consult.set_text('')
+        self.label_date_buy_insumo_consult.set_text('')
+        self.open_window(self.janela_inicio)
+    
+    def on_button19_clicked(self, button):
+        #abrir consulta de imoveis
+        model = self.combo_imovel.get_model()
+        if model is None:
+            model = Gtk.ListStore(str)
+            renderer_text = Gtk.CellRendererText()
+            self.combo_imovel.pack_start(renderer_text, True)
+            self.combo_imovel.add_attribute(renderer_text, "text", 0)
+        self.combo_imovel.set_model(None)
+        model.clear()
+        imoveis = self.db.get_imoveis()
+        for imovel in imoveis:
+            model.append([imovel[1]])    
+        self.combo_imovel.set_model(model)
+        self.open_window(self.janela_relatorio_imovel)
+
+    def on_button20_clicked(self, button):
+        #abrir consulta de compras
+        model = self.combo_imovel_buy_insumo_consult.get_model()
+        if model is None:
+            model = Gtk.ListStore(str)
+            renderer_text = Gtk.CellRendererText()
+            self.combo_imovel_buy_insumo_consult.pack_start(renderer_text, True)
+            self.combo_imovel_buy_insumo_consult.add_attribute(renderer_text, "text", 0)
+        self.combo_imovel_buy_insumo_consult.set_model(None)
+        model.clear()
+        imoveis = self.db.get_imoveis()
+        for imovel in imoveis:
+            model.append([imovel[1]])    
+        self.combo_imovel_buy_insumo_consult.set_model(model)
+        self.open_window(self.janela_relatorio_compra)
+
+    def on_button21_clicked(self, button):
+        #voltar
+        self.open_window(self.janela_inicio)
+
+    def on_button22_clicked(self, button):
+        #consulta insumo
+        model = self.combo_insumo_consult.get_model()
+        if model is None:
+            model = Gtk.ListStore(str)
+            renderer_text = Gtk.CellRendererText()
+            self.combo_insumo_consult.pack_start(renderer_text, True)
+            self.combo_insumo_consult.add_attribute(renderer_text, "text", 0)
+        self.combo_insumo_consult.set_model(None)
+        model.clear()
+        insumos = self.db.get_insumos()
+        for insumo in insumos:
+            model.append([insumo[2]])    
+        self.combo_insumo_consult.set_model(model)
+        self.open_window(self.janela_relatorio_insumo)
+
+    def on_button23_clicked(self, button):
+        #voltar consulta insumo
+        self.label_valor_total_buy_insumo_consult.set_text('')
+        self.label_valor_unity_buy_insumo_consult.set_text('')
+        self.label_date_buy_insumo_consult.set_text('')
+        self.open_window(self.janela_inicio)
+
     def on_combobox1_changed(self, combo):
         #combo alterar insumo
         tree_iter = combo.get_active_iter()
         if tree_iter != None:
             model = combo.get_model()
             desc = model[tree_iter][0]
-            print(" desc=%s" %  desc)
             atributes = self.db.get_insumo_by_desc(desc)
-            print(atributes)
             self.entry_codigo_insumo_edit.set_text(atributes[1])
             self.entry_descricao_insumo_edit.set_text(atributes[2])
             self.entry_unity_insumo_edit.set_text(atributes[3])
@@ -541,9 +631,7 @@ class interface:
         if tree_iter != None:
             model = combo.get_model()
             desc = model[tree_iter][0]
-            print(" desc=%s" %  desc)
             atributes = self.db.get_insumo_by_desc(desc)
-            print(atributes)
             self.label_codigo_insumo_remove.set_text(atributes[1])
             self.label_descricao_insumo_remove.set_text(atributes[2])
             self.label_unity_insumo_remove.set_text(atributes[3])
@@ -555,9 +643,7 @@ class interface:
         if tree_iter != None:
             model = combo.get_model()
             desc = model[tree_iter][0]
-            print(" desc=%s" %  desc)
             atributes = self.db.get_imovel_by_end(desc)
-            print(atributes)
             self.entry_endereco_imovel_edit.set_text(atributes[1])
             self.entry_dimen_imovel_edit.set_text(atributes[2])
             self.entry_type_imovel_edit.set_text(atributes[3])
@@ -573,9 +659,7 @@ class interface:
         if tree_iter != None:
             model = combo.get_model()
             desc = model[tree_iter][0]
-            print(" desc=%s" %  desc)
             atributes = self.db.get_imovel_by_end(desc)
-            print(atributes)
             self.label_endereco_imovel_remove.set_text(atributes[1])
             self.label_dimen_imovel_remove.set_text(atributes[2])
             self.label_type_imovel_remove.set_text(atributes[3])
@@ -585,6 +669,21 @@ class interface:
             self.label_status_imovel_remove.set_text(atributes[7])
             self.selected_imovel = desc
 
+    def on_combobox5_changed(self, combo):
+        #selecionar imovel
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_imovel_by_end(desc)
+            self.label_endereco_imovel.set_text(atributes[1])
+            self.label_dimen_imovel.set_text(atributes[2])
+            self.label_type_imovel.set_text(atributes[3])
+            self.label_comodos_imovel.set_text(atributes[4])
+            self.label_responsavel_imovel.set_text(atributes[5])
+            self.label_data_imovel.set_text(atributes[6])
+            self.label_status_imovel.set_text(atributes[7])
+
     def on_combobox6_changed(self, combo):
         tree_iter = combo.get_active_iter()
         if tree_iter != None:
@@ -592,18 +691,18 @@ class interface:
             desc = model[tree_iter][0]
             atributes = self.db.get_imovel_by_end(desc)
             self.selected_imovel_buy = atributes[0]
-        model = self.combo_insumo_buy_insumo_remove.get_model()
-        if model is None:
-            model = Gtk.ListStore(str)
-            renderer_text = Gtk.CellRendererText()
-            self.combo_insumo_buy_insumo_remove.pack_start(renderer_text, True)
-            self.combo_insumo_buy_insumo_remove.add_attribute(renderer_text, "text", 0)
-        self.combo_insumo_buy_insumo_remove.set_model(None)
-        model.clear()
-        insumos = self.db.get_insumo_by_imovel(self.selected_imovel_buy)
-        for insumo in insumos:
-            model.append([insumo[1]])    
-        self.combo_insumo_buy_insumo_remove.set_model(model)
+            model = self.combo_insumo_buy_insumo_remove.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_insumo_buy_insumo_remove.pack_start(renderer_text, True)
+                self.combo_insumo_buy_insumo_remove.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_buy_insumo_remove.set_model(None)
+            model.clear()
+            insumos = self.db.get_insumo_by_imovel(self.selected_imovel_buy)
+            for insumo in insumos:
+                model.append([insumo[1]])    
+            self.combo_insumo_buy_insumo_remove.set_model(model)
     
     def on_combobox7_changed(self, combo):
         #combo selecionar imovel compra
@@ -611,7 +710,6 @@ class interface:
         if tree_iter != None:
             model = combo.get_model()
             desc = model[tree_iter][0]
-            print(" desc=%s" %  desc)
             atributes = self.db.get_imovel_by_end(desc)
             self.selected_imovel_buy = atributes[0]
 
@@ -621,7 +719,6 @@ class interface:
         if tree_iter != None:
             model = combo.get_model()
             desc = model[tree_iter][0]
-            print(" desc=%s" %  desc)
             atributes = self.db.get_insumo_by_desc(desc)
             self.selected_insumo_buy = atributes[0]
 
@@ -632,19 +729,18 @@ class interface:
             desc = model[tree_iter][0]
             atributes = self.db.get_imovel_by_end(desc)
             self.selected_imovel_buy = atributes[0]
-        model = self.combo_insumo_buy_insumo_edit.get_model()
-        if model is None:
-            model = Gtk.ListStore(str)
-            renderer_text = Gtk.CellRendererText()
-            self.combo_insumo_buy_insumo_edit.pack_start(renderer_text, True)
-            self.combo_insumo_buy_insumo_edit.add_attribute(renderer_text, "text", 0)
-        self.combo_insumo_buy_insumo_edit.set_model(None)
-        model.clear()
-        insumos = self.db.get_insumo_by_imovel(self.selected_imovel_buy)
-        for insumo in insumos:
-            print(insumo)
-            model.append([insumo[1]])    
-        self.combo_insumo_buy_insumo_edit.set_model(model)
+            model = self.combo_insumo_buy_insumo_edit.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_insumo_buy_insumo_edit.pack_start(renderer_text, True)
+                self.combo_insumo_buy_insumo_edit.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_buy_insumo_edit.set_model(None)
+            model.clear()
+            insumos = self.db.get_insumo_by_imovel(self.selected_imovel_buy)
+            for insumo in insumos:
+                model.append([insumo[1]])    
+            self.combo_insumo_buy_insumo_edit.set_model(model)
     
     def on_combobox10_changed(self, combo):
         tree_iter = combo.get_active_iter()
@@ -665,6 +761,48 @@ class interface:
             self.label_valor_unity_buy_insumo_remove.set_text(data[2])
             self.label_valor_total_buy_insumo_remove.set_text(data[3])
             self.label_date_buy_insumo_remove.set_text(data[4])
+
+    def on_combobox12_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_imovel_by_end(desc)
+            selected_imovel_consult = atributes[0]
+            model = self.combo_insumo_buy_insumo_consult.get_model()
+            if model is None:
+                model = Gtk.ListStore(str)
+                renderer_text = Gtk.CellRendererText()
+                self.combo_insumo_buy_insumo_consult.pack_start(renderer_text, True)
+                self.combo_insumo_buy_insumo_consult.add_attribute(renderer_text, "text", 0)
+            self.combo_insumo_buy_insumo_consult.set_model(None)
+            model.clear()
+            insumos = self.db.get_insumo_by_imovel(selected_imovel_consult)
+            for insumo in insumos:
+                model.append([insumo[1]])    
+            self.combo_insumo_buy_insumo_consult.set_model(model)
+    
+    def on_combobox13_changed(self, combo):
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_insumo_by_desc(desc)
+            self.selected_insumo_buy = atributes[0]
+            self.label_valor_unity_buy_insumo_consult.set_text(atributes[1])
+            self.label_valor_total_buy_insumo_consult.set_text(atributes[2])
+            self.label_date_buy_insumo_consult.set_text(atributes[3])
+    
+    def on_combobox14_changed(self, combo):
+        #combo consultar insumo
+        tree_iter = combo.get_active_iter()
+        if tree_iter != None:
+            model = combo.get_model()
+            desc = model[tree_iter][0]
+            atributes = self.db.get_insumo_by_desc(desc)
+            self.label_codigo_insumo_consult.set_text(atributes[1])
+            self.label_descricao_insumo_consult.set_text(atributes[2])
+            self.label_unity_insumo_consult.set_text(atributes[3])
 
     def close(self, *args):
         Gtk.main_quit(*args)
